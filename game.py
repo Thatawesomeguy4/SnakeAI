@@ -9,12 +9,6 @@ pygame.init()
 font = pygame.font.Font('arial.ttf', 25)
 #font = pygame.font.SysFont('arial', 25)
 
-#reset
-#reward
-#play(action) -> direction
-#game_iteration
-#is_collision
-
 class Direction(Enum):
     RIGHT = 1
     LEFT = 2
@@ -32,11 +26,11 @@ BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
 SPEED = 60
-HEALTH = 50
+HEALTH = 90
 
 class SnakeGameAI:
     
-    def __init__(self, w=640, h=480):
+    def __init__(self, w=1000, h=800):
         self.w = w
         self.h = h
         # init display
@@ -46,6 +40,7 @@ class SnakeGameAI:
         self.timer = time.perf_counter()
         self.reset()
         self.hunger = HEALTH
+        self.speed = SPEED
 
     def reset(self):
         # init game state
@@ -79,10 +74,17 @@ class SnakeGameAI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_KP_PLUS:
+                    self.speed += 10
+                if event.key == pygame.K_KP_MINUS:
+                    self.speed -= 10
+
         
         # 2. move
         self._move(action) # update the head
         self.snake.insert(0, self.head)
+
         
         # 3. check if game over
         reward = 0
@@ -109,7 +111,7 @@ class SnakeGameAI:
         
         # 5. update ui and clock
         self._update_ui()
-        self.clock.tick(SPEED)
+        self.clock.tick(self.speed)
         # 6. return game over and score
         return reward, game_over, self.score
     
@@ -140,7 +142,8 @@ class SnakeGameAI:
 
         text = font.render("Score: " + str(self.score), True, WHITE)
         timer = font.render(f"Time: {time.perf_counter() - self.timer:0.2f}", True, WHITE)
-        self.display.blits([(text, (0, 0)), (timer, (200, 0))])
+        simSpeedText = font.render("Sim Speed: " + str(self.speed), True, WHITE)
+        self.display.blits([(text, (0, 0)), (timer, (200, 0)),(simSpeedText, (0, 100))])
 
         pygame.display.flip()
         
