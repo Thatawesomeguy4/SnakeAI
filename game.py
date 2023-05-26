@@ -143,7 +143,7 @@ class SnakeGameAI:
         text = font.render("Score: " + str(self.score), True, WHITE)
         timer = font.render(f"Time: {time.perf_counter() - self.timer:0.2f}", True, WHITE)
         simSpeedText = font.render("Sim Speed: " + str(self.speed), True, WHITE)
-        self.display.blits([(text, (0, 0)), (timer, (200, 0)),(simSpeedText, (0, 100))])
+        self.display.blits([(text, (0, 0)), (timer, (150, 0)),(simSpeedText, (0, 25))])
 
         pygame.display.flip()
         
