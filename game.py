@@ -31,7 +31,8 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
-SPEED = 20
+SPEED = 60
+HEALTH = 50
 
 class SnakeGameAI:
     
@@ -44,6 +45,7 @@ class SnakeGameAI:
         self.clock = pygame.time.Clock()
         self.timer = time.perf_counter()
         self.reset()
+        self.hunger = HEALTH
 
     def reset(self):
         # init game state
@@ -55,6 +57,7 @@ class SnakeGameAI:
                       Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
         
         self.score = 0
+        self.hunger = HEALTH
         self.food = None
         self._place_food()
         self.frame_iteration = 0
@@ -90,12 +93,18 @@ class SnakeGameAI:
             reward = -10
             return reward, game_over, self.score
             
-        # 4. place new food or just move
+        # 4. place new food or just move and check to see if the worm starved to death
         if self.head == self.food:
             self.score += 1
             reward = 10
+            self.hunger = HEALTH        # set health back to max
             self._place_food()
+        elif self.hunger == 0:      # game over condition for starvation
+            game_over = True
+            reward = -10
+            return reward, game_over, self.score
         else:
+            self.hunger -= 1
             self.snake.pop()
         
         # 5. update ui and clock
@@ -124,10 +133,14 @@ class SnakeGameAI:
             pygame.draw.rect(self.display, BLUE2, pygame.Rect(pt.x+4, pt.y+4, 12, 12))
             
         pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
-        
+
+        #draw hunger bar
+        pygame.draw.rect(self.display, RED, pygame.Rect(self.head.x, self.head.y - 20, HEALTH, 10))
+        pygame.draw.rect(self.display, (0, 128, 0), pygame.Rect(self.head.x, self.head.y - 20, HEALTH - (HEALTH - self.hunger), 10))
+
         text = font.render("Score: " + str(self.score), True, WHITE)
         timer = font.render(f"Time: {time.perf_counter() - self.timer:0.2f}", True, WHITE)
-        self.display.blits([(text, (0, 0)), (timer, (100, 0))])
+        self.display.blits([(text, (0, 0)), (timer, (200, 0))])
 
         pygame.display.flip()
         

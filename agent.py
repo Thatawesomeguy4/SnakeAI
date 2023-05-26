@@ -16,7 +16,7 @@ class Agent:
         self.epsilon = 0                                                # parameter to control randomness
         self.gamma = 0.9                                                # discount rate
         self.memory = deque(maxlen=MAX_MEMORY)                          # popleft() if memory is exceeded
-        self.model = Linear_QNet(11, 256, 3)                            # input size,
+        self.model = Linear_QNet(11, 512, 3)                            # input size,
                                                                         # define hidden size,and define output
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)    # TODO
 
@@ -61,7 +61,8 @@ class Agent:
             game.food.x < game.head.x,      # food is to the left
             game.food.x > game.head.x,      # food is to the right
             game.food.y < game.head.y,      # food is above
-            game.food.y > game.head.y       # food is below
+            game.food.y > game.head.y,       # food is below
+
         ]
 
         return numpy.array(state, dtype=int)
