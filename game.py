@@ -93,7 +93,7 @@ class SnakeGameAI:
         if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True
             reward = -10
-            return reward, game_over, self.score
+            return reward, game_over, self.score, round(time.perf_counter() - self.timer, 2)
             
         # 4. place new food or just move and check to see if the worm starved to death
         if self.head == self.food:
@@ -104,7 +104,7 @@ class SnakeGameAI:
         elif self.hunger == 0:      # game over condition for starvation
             game_over = True
             reward = -10
-            return reward, game_over, self.score
+            return reward, game_over, self.score, round(time.perf_counter() - self.timer, 2)
         else:
             self.hunger -= 1
             self.snake.pop()
@@ -113,7 +113,7 @@ class SnakeGameAI:
         self._update_ui()
         self.clock.tick(self.speed)
         # 6. return game over and score
-        return reward, game_over, self.score
+        return reward, game_over, self.score, round(time.perf_counter() - self.timer, 2)
     
     def is_collision(self, pt=None):
         if pt is None:
